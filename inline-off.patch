@@ -1,0 +1,590 @@
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index bb99bada7e2e..3387f4382090 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -20923,306 +20923,306 @@ static int do_misc_fixups(struct bpf_verifier_env *env)
+ 		 * and other inlining handlers are currently limited to 64 bit
+ 		 * only.
+ 		 */
+-		if (prog->jit_requested && BITS_PER_LONG == 64 &&
+-		    (insn->imm == BPF_FUNC_map_lookup_elem ||
+-		     insn->imm == BPF_FUNC_map_update_elem ||
+-		     insn->imm == BPF_FUNC_map_delete_elem ||
+-		     insn->imm == BPF_FUNC_map_push_elem   ||
+-		     insn->imm == BPF_FUNC_map_pop_elem    ||
+-		     insn->imm == BPF_FUNC_map_peek_elem   ||
+-		     insn->imm == BPF_FUNC_redirect_map    ||
+-		     insn->imm == BPF_FUNC_for_each_map_elem ||
+-		     insn->imm == BPF_FUNC_map_lookup_percpu_elem)) {
+-			aux = &env->insn_aux_data[i + delta];
+-			if (bpf_map_ptr_poisoned(aux))
+-				goto patch_call_imm;
+-
+-			map_ptr = aux->map_ptr_state.map_ptr;
+-			ops = map_ptr->ops;
+-			if (insn->imm == BPF_FUNC_map_lookup_elem &&
+-			    ops->map_gen_lookup) {
+-				cnt = ops->map_gen_lookup(map_ptr, insn_buf);
+-				if (cnt == -EOPNOTSUPP)
+-					goto patch_map_ops_generic;
+-				if (cnt <= 0 || cnt >= INSN_BUF_SIZE) {
+-					verbose(env, "bpf verifier is misconfigured\n");
+-					return -EINVAL;
+-				}
+-
+-				new_prog = bpf_patch_insn_data(env, i + delta,
+-							       insn_buf, cnt);
+-				if (!new_prog)
+-					return -ENOMEM;
+-
+-				delta    += cnt - 1;
+-				env->prog = prog = new_prog;
+-				insn      = new_prog->insnsi + i + delta;
+-				goto next_insn;
+-			}
+-
+-			BUILD_BUG_ON(!__same_type(ops->map_lookup_elem,
+-				     (void *(*)(struct bpf_map *map, void *key))NULL));
+-			BUILD_BUG_ON(!__same_type(ops->map_delete_elem,
+-				     (long (*)(struct bpf_map *map, void *key))NULL));
+-			BUILD_BUG_ON(!__same_type(ops->map_update_elem,
+-				     (long (*)(struct bpf_map *map, void *key, void *value,
+-					      u64 flags))NULL));
+-			BUILD_BUG_ON(!__same_type(ops->map_push_elem,
+-				     (long (*)(struct bpf_map *map, void *value,
+-					      u64 flags))NULL));
+-			BUILD_BUG_ON(!__same_type(ops->map_pop_elem,
+-				     (long (*)(struct bpf_map *map, void *value))NULL));
+-			BUILD_BUG_ON(!__same_type(ops->map_peek_elem,
+-				     (long (*)(struct bpf_map *map, void *value))NULL));
+-			BUILD_BUG_ON(!__same_type(ops->map_redirect,
+-				     (long (*)(struct bpf_map *map, u64 index, u64 flags))NULL));
+-			BUILD_BUG_ON(!__same_type(ops->map_for_each_callback,
+-				     (long (*)(struct bpf_map *map,
+-					      bpf_callback_t callback_fn,
+-					      void *callback_ctx,
+-					      u64 flags))NULL));
+-			BUILD_BUG_ON(!__same_type(ops->map_lookup_percpu_elem,
+-				     (void *(*)(struct bpf_map *map, void *key, u32 cpu))NULL));
+-
+-patch_map_ops_generic:
+-			switch (insn->imm) {
+-			case BPF_FUNC_map_lookup_elem:
+-				insn->imm = BPF_CALL_IMM(ops->map_lookup_elem);
+-				goto next_insn;
+-			case BPF_FUNC_map_update_elem:
+-				insn->imm = BPF_CALL_IMM(ops->map_update_elem);
+-				goto next_insn;
+-			case BPF_FUNC_map_delete_elem:
+-				insn->imm = BPF_CALL_IMM(ops->map_delete_elem);
+-				goto next_insn;
+-			case BPF_FUNC_map_push_elem:
+-				insn->imm = BPF_CALL_IMM(ops->map_push_elem);
+-				goto next_insn;
+-			case BPF_FUNC_map_pop_elem:
+-				insn->imm = BPF_CALL_IMM(ops->map_pop_elem);
+-				goto next_insn;
+-			case BPF_FUNC_map_peek_elem:
+-				insn->imm = BPF_CALL_IMM(ops->map_peek_elem);
+-				goto next_insn;
+-			case BPF_FUNC_redirect_map:
+-				insn->imm = BPF_CALL_IMM(ops->map_redirect);
+-				goto next_insn;
+-			case BPF_FUNC_for_each_map_elem:
+-				insn->imm = BPF_CALL_IMM(ops->map_for_each_callback);
+-				goto next_insn;
+-			case BPF_FUNC_map_lookup_percpu_elem:
+-				insn->imm = BPF_CALL_IMM(ops->map_lookup_percpu_elem);
+-				goto next_insn;
+-			}
+-
+-			goto patch_call_imm;
+-		}
++		// if (prog->jit_requested && BITS_PER_LONG == 64 &&
++		//     (insn->imm == BPF_FUNC_map_lookup_elem ||
++		//      insn->imm == BPF_FUNC_map_update_elem ||
++		//      insn->imm == BPF_FUNC_map_delete_elem ||
++		//      insn->imm == BPF_FUNC_map_push_elem   ||
++		//      insn->imm == BPF_FUNC_map_pop_elem    ||
++		//      insn->imm == BPF_FUNC_map_peek_elem   ||
++		//      insn->imm == BPF_FUNC_redirect_map    ||
++		//      insn->imm == BPF_FUNC_for_each_map_elem ||
++		//      insn->imm == BPF_FUNC_map_lookup_percpu_elem)) {
++		// 	aux = &env->insn_aux_data[i + delta];
++		// 	if (bpf_map_ptr_poisoned(aux))
++		// 		goto patch_call_imm;
++
++		// 	map_ptr = aux->map_ptr_state.map_ptr;
++		// 	ops = map_ptr->ops;
++		// 	if (insn->imm == BPF_FUNC_map_lookup_elem &&
++		// 	    ops->map_gen_lookup) {
++		// 		cnt = ops->map_gen_lookup(map_ptr, insn_buf);
++		// 		if (cnt == -EOPNOTSUPP)
++		// 			goto patch_map_ops_generic;
++		// 		if (cnt <= 0 || cnt >= INSN_BUF_SIZE) {
++		// 			verbose(env, "bpf verifier is misconfigured\n");
++		// 			return -EINVAL;
++		// 		}
++
++		// 		new_prog = bpf_patch_insn_data(env, i + delta,
++		// 					       insn_buf, cnt);
++		// 		if (!new_prog)
++		// 			return -ENOMEM;
++
++		// 		delta    += cnt - 1;
++		// 		env->prog = prog = new_prog;
++		// 		insn      = new_prog->insnsi + i + delta;
++		// 		goto next_insn;
++		// 	}
++
++		// 	BUILD_BUG_ON(!__same_type(ops->map_lookup_elem,
++		// 		     (void *(*)(struct bpf_map *map, void *key))NULL));
++		// 	BUILD_BUG_ON(!__same_type(ops->map_delete_elem,
++		// 		     (long (*)(struct bpf_map *map, void *key))NULL));
++		// 	BUILD_BUG_ON(!__same_type(ops->map_update_elem,
++		// 		     (long (*)(struct bpf_map *map, void *key, void *value,
++		// 			      u64 flags))NULL));
++		// 	BUILD_BUG_ON(!__same_type(ops->map_push_elem,
++		// 		     (long (*)(struct bpf_map *map, void *value,
++		// 			      u64 flags))NULL));
++		// 	BUILD_BUG_ON(!__same_type(ops->map_pop_elem,
++		// 		     (long (*)(struct bpf_map *map, void *value))NULL));
++		// 	BUILD_BUG_ON(!__same_type(ops->map_peek_elem,
++		// 		     (long (*)(struct bpf_map *map, void *value))NULL));
++		// 	BUILD_BUG_ON(!__same_type(ops->map_redirect,
++		// 		     (long (*)(struct bpf_map *map, u64 index, u64 flags))NULL));
++		// 	BUILD_BUG_ON(!__same_type(ops->map_for_each_callback,
++		// 		     (long (*)(struct bpf_map *map,
++		// 			      bpf_callback_t callback_fn,
++		// 			      void *callback_ctx,
++		// 			      u64 flags))NULL));
++		// 	BUILD_BUG_ON(!__same_type(ops->map_lookup_percpu_elem,
++		// 		     (void *(*)(struct bpf_map *map, void *key, u32 cpu))NULL));
++
++//patch_map_ops_generic:
++		// 	switch (insn->imm) {
++		// 	case BPF_FUNC_map_lookup_elem:
++		// 		insn->imm = BPF_CALL_IMM(ops->map_lookup_elem);
++		// 		goto next_insn;
++		// 	case BPF_FUNC_map_update_elem:
++		// 		insn->imm = BPF_CALL_IMM(ops->map_update_elem);
++		// 		goto next_insn;
++		// 	case BPF_FUNC_map_delete_elem:
++		// 		insn->imm = BPF_CALL_IMM(ops->map_delete_elem);
++		// 		goto next_insn;
++		// 	case BPF_FUNC_map_push_elem:
++		// 		insn->imm = BPF_CALL_IMM(ops->map_push_elem);
++		// 		goto next_insn;
++		// 	case BPF_FUNC_map_pop_elem:
++		// 		insn->imm = BPF_CALL_IMM(ops->map_pop_elem);
++		// 		goto next_insn;
++		// 	case BPF_FUNC_map_peek_elem:
++		// 		insn->imm = BPF_CALL_IMM(ops->map_peek_elem);
++		// 		goto next_insn;
++		// 	case BPF_FUNC_redirect_map:
++		// 		insn->imm = BPF_CALL_IMM(ops->map_redirect);
++		// 		goto next_insn;
++		// 	case BPF_FUNC_for_each_map_elem:
++		// 		insn->imm = BPF_CALL_IMM(ops->map_for_each_callback);
++		// 		goto next_insn;
++		// 	case BPF_FUNC_map_lookup_percpu_elem:
++		// 		insn->imm = BPF_CALL_IMM(ops->map_lookup_percpu_elem);
++		// 		goto next_insn;
++		// 	}
++
++		// 	goto patch_call_imm;
++		// }
+ 
+ 		/* Implement bpf_jiffies64 inline. */
+-		if (prog->jit_requested && BITS_PER_LONG == 64 &&
+-		    insn->imm == BPF_FUNC_jiffies64) {
+-			struct bpf_insn ld_jiffies_addr[2] = {
+-				BPF_LD_IMM64(BPF_REG_0,
+-					     (unsigned long)&jiffies),
+-			};
+-
+-			insn_buf[0] = ld_jiffies_addr[0];
+-			insn_buf[1] = ld_jiffies_addr[1];
+-			insn_buf[2] = BPF_LDX_MEM(BPF_DW, BPF_REG_0,
+-						  BPF_REG_0, 0);
+-			cnt = 3;
+-
+-			new_prog = bpf_patch_insn_data(env, i + delta, insn_buf,
+-						       cnt);
+-			if (!new_prog)
+-				return -ENOMEM;
+-
+-			delta    += cnt - 1;
+-			env->prog = prog = new_prog;
+-			insn      = new_prog->insnsi + i + delta;
+-			goto next_insn;
+-		}
++		// if (prog->jit_requested && BITS_PER_LONG == 64 &&
++		//     insn->imm == BPF_FUNC_jiffies64) {
++		// 	struct bpf_insn ld_jiffies_addr[2] = {
++		// 		BPF_LD_IMM64(BPF_REG_0,
++		// 			     (unsigned long)&jiffies),
++		// 	};
++
++		// 	insn_buf[0] = ld_jiffies_addr[0];
++		// 	insn_buf[1] = ld_jiffies_addr[1];
++		// 	insn_buf[2] = BPF_LDX_MEM(BPF_DW, BPF_REG_0,
++		// 				  BPF_REG_0, 0);
++		// 	cnt = 3;
++
++		// 	new_prog = bpf_patch_insn_data(env, i + delta, insn_buf,
++		// 				       cnt);
++		// 	if (!new_prog)
++		// 		return -ENOMEM;
++
++		// 	delta    += cnt - 1;
++		// 	env->prog = prog = new_prog;
++		// 	insn      = new_prog->insnsi + i + delta;
++		// 	goto next_insn;
++		// }
+ 
+ #if defined(CONFIG_X86_64) && !defined(CONFIG_UML)
+ 		/* Implement bpf_get_smp_processor_id() inline. */
+-		if (insn->imm == BPF_FUNC_get_smp_processor_id &&
+-		    verifier_inlines_helper_call(env, insn->imm)) {
+-			/* BPF_FUNC_get_smp_processor_id inlining is an
+-			 * optimization, so if pcpu_hot.cpu_number is ever
+-			 * changed in some incompatible and hard to support
+-			 * way, it's fine to back out this inlining logic
+-			 */
+-			insn_buf[0] = BPF_MOV32_IMM(BPF_REG_0, (u32)(unsigned long)&pcpu_hot.cpu_number);
+-			insn_buf[1] = BPF_MOV64_PERCPU_REG(BPF_REG_0, BPF_REG_0);
+-			insn_buf[2] = BPF_LDX_MEM(BPF_W, BPF_REG_0, BPF_REG_0, 0);
+-			cnt = 3;
+-
+-			new_prog = bpf_patch_insn_data(env, i + delta, insn_buf, cnt);
+-			if (!new_prog)
+-				return -ENOMEM;
+-
+-			delta    += cnt - 1;
+-			env->prog = prog = new_prog;
+-			insn      = new_prog->insnsi + i + delta;
+-			goto next_insn;
+-		}
++		//if (insn->imm == BPF_FUNC_get_smp_processor_id &&
++		//    verifier_inlines_helper_call(env, insn->imm)) {
++		//	/* BPF_FUNC_get_smp_processor_id inlining is an
++		//	 * optimization, so if pcpu_hot.cpu_number is ever
++		//	 * changed in some incompatible and hard to support
++		//	 * way, it's fine to back out this inlining logic
++		//	 */
++		//	insn_buf[0] = BPF_MOV32_IMM(BPF_REG_0, (u32)(unsigned long)&pcpu_hot.cpu_number);
++		//	insn_buf[1] = BPF_MOV64_PERCPU_REG(BPF_REG_0, BPF_REG_0);
++		//	insn_buf[2] = BPF_LDX_MEM(BPF_W, BPF_REG_0, BPF_REG_0, 0);
++		//	cnt = 3;
++
++		//	new_prog = bpf_patch_insn_data(env, i + delta, insn_buf, cnt);
++		//	if (!new_prog)
++		//		return -ENOMEM;
++
++		//	delta    += cnt - 1;
++		//	env->prog = prog = new_prog;
++		//	insn      = new_prog->insnsi + i + delta;
++		//	goto next_insn;
++		//}
+ #endif
+ 		/* Implement bpf_get_func_arg inline. */
+-		if (prog_type == BPF_PROG_TYPE_TRACING &&
+-		    insn->imm == BPF_FUNC_get_func_arg) {
+-			/* Load nr_args from ctx - 8 */
+-			insn_buf[0] = BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_1, -8);
+-			insn_buf[1] = BPF_JMP32_REG(BPF_JGE, BPF_REG_2, BPF_REG_0, 6);
+-			insn_buf[2] = BPF_ALU64_IMM(BPF_LSH, BPF_REG_2, 3);
+-			insn_buf[3] = BPF_ALU64_REG(BPF_ADD, BPF_REG_2, BPF_REG_1);
+-			insn_buf[4] = BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_2, 0);
+-			insn_buf[5] = BPF_STX_MEM(BPF_DW, BPF_REG_3, BPF_REG_0, 0);
+-			insn_buf[6] = BPF_MOV64_IMM(BPF_REG_0, 0);
+-			insn_buf[7] = BPF_JMP_A(1);
+-			insn_buf[8] = BPF_MOV64_IMM(BPF_REG_0, -EINVAL);
+-			cnt = 9;
+-
+-			new_prog = bpf_patch_insn_data(env, i + delta, insn_buf, cnt);
+-			if (!new_prog)
+-				return -ENOMEM;
+-
+-			delta    += cnt - 1;
+-			env->prog = prog = new_prog;
+-			insn      = new_prog->insnsi + i + delta;
+-			goto next_insn;
+-		}
++		//if (prog_type == BPF_PROG_TYPE_TRACING &&
++		//    insn->imm == BPF_FUNC_get_func_arg) {
++		//	/* Load nr_args from ctx - 8 */
++		//	insn_buf[0] = BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_1, -8);
++		//	insn_buf[1] = BPF_JMP32_REG(BPF_JGE, BPF_REG_2, BPF_REG_0, 6);
++		//	insn_buf[2] = BPF_ALU64_IMM(BPF_LSH, BPF_REG_2, 3);
++		//	insn_buf[3] = BPF_ALU64_REG(BPF_ADD, BPF_REG_2, BPF_REG_1);
++		//	insn_buf[4] = BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_2, 0);
++		//	insn_buf[5] = BPF_STX_MEM(BPF_DW, BPF_REG_3, BPF_REG_0, 0);
++		//	insn_buf[6] = BPF_MOV64_IMM(BPF_REG_0, 0);
++		//	insn_buf[7] = BPF_JMP_A(1);
++		//	insn_buf[8] = BPF_MOV64_IMM(BPF_REG_0, -EINVAL);
++		//	cnt = 9;
++
++		//	new_prog = bpf_patch_insn_data(env, i + delta, insn_buf, cnt);
++		//	if (!new_prog)
++		//		return -ENOMEM;
++
++		//	delta    += cnt - 1;
++		//	env->prog = prog = new_prog;
++		//	insn      = new_prog->insnsi + i + delta;
++		//	goto next_insn;
++		//}
+ 
+ 		/* Implement bpf_get_func_ret inline. */
+-		if (prog_type == BPF_PROG_TYPE_TRACING &&
+-		    insn->imm == BPF_FUNC_get_func_ret) {
+-			if (eatype == BPF_TRACE_FEXIT ||
+-			    eatype == BPF_MODIFY_RETURN) {
+-				/* Load nr_args from ctx - 8 */
+-				insn_buf[0] = BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_1, -8);
+-				insn_buf[1] = BPF_ALU64_IMM(BPF_LSH, BPF_REG_0, 3);
+-				insn_buf[2] = BPF_ALU64_REG(BPF_ADD, BPF_REG_0, BPF_REG_1);
+-				insn_buf[3] = BPF_LDX_MEM(BPF_DW, BPF_REG_3, BPF_REG_0, 0);
+-				insn_buf[4] = BPF_STX_MEM(BPF_DW, BPF_REG_2, BPF_REG_3, 0);
+-				insn_buf[5] = BPF_MOV64_IMM(BPF_REG_0, 0);
+-				cnt = 6;
+-			} else {
+-				insn_buf[0] = BPF_MOV64_IMM(BPF_REG_0, -EOPNOTSUPP);
+-				cnt = 1;
+-			}
+-
+-			new_prog = bpf_patch_insn_data(env, i + delta, insn_buf, cnt);
+-			if (!new_prog)
+-				return -ENOMEM;
+-
+-			delta    += cnt - 1;
+-			env->prog = prog = new_prog;
+-			insn      = new_prog->insnsi + i + delta;
+-			goto next_insn;
+-		}
++		//if (prog_type == BPF_PROG_TYPE_TRACING &&
++		//    insn->imm == BPF_FUNC_get_func_ret) {
++		//	if (eatype == BPF_TRACE_FEXIT ||
++		//	    eatype == BPF_MODIFY_RETURN) {
++		//		/* Load nr_args from ctx - 8 */
++		//		insn_buf[0] = BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_1, -8);
++		//		insn_buf[1] = BPF_ALU64_IMM(BPF_LSH, BPF_REG_0, 3);
++		//		insn_buf[2] = BPF_ALU64_REG(BPF_ADD, BPF_REG_0, BPF_REG_1);
++		//		insn_buf[3] = BPF_LDX_MEM(BPF_DW, BPF_REG_3, BPF_REG_0, 0);
++		//		insn_buf[4] = BPF_STX_MEM(BPF_DW, BPF_REG_2, BPF_REG_3, 0);
++		//		insn_buf[5] = BPF_MOV64_IMM(BPF_REG_0, 0);
++		//		cnt = 6;
++		//	} else {
++		//		insn_buf[0] = BPF_MOV64_IMM(BPF_REG_0, -EOPNOTSUPP);
++		//		cnt = 1;
++		//	}
++
++		//	new_prog = bpf_patch_insn_data(env, i + delta, insn_buf, cnt);
++		//	if (!new_prog)
++		//		return -ENOMEM;
++
++		//	delta    += cnt - 1;
++		//	env->prog = prog = new_prog;
++		//	insn      = new_prog->insnsi + i + delta;
++		//	goto next_insn;
++		//}
+ 
+ 		/* Implement get_func_arg_cnt inline. */
+-		if (prog_type == BPF_PROG_TYPE_TRACING &&
+-		    insn->imm == BPF_FUNC_get_func_arg_cnt) {
+-			/* Load nr_args from ctx - 8 */
+-			insn_buf[0] = BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_1, -8);
++		//if (prog_type == BPF_PROG_TYPE_TRACING &&
++		//    insn->imm == BPF_FUNC_get_func_arg_cnt) {
++		//	/* Load nr_args from ctx - 8 */
++		//	insn_buf[0] = BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_1, -8);
+ 
+-			new_prog = bpf_patch_insn_data(env, i + delta, insn_buf, 1);
+-			if (!new_prog)
+-				return -ENOMEM;
++		//	new_prog = bpf_patch_insn_data(env, i + delta, insn_buf, 1);
++		//	if (!new_prog)
++		//		return -ENOMEM;
+ 
+-			env->prog = prog = new_prog;
+-			insn      = new_prog->insnsi + i + delta;
+-			goto next_insn;
+-		}
++		//	env->prog = prog = new_prog;
++		//	insn      = new_prog->insnsi + i + delta;
++		//	goto next_insn;
++		//}
+ 
+ 		/* Implement bpf_get_func_ip inline. */
+-		if (prog_type == BPF_PROG_TYPE_TRACING &&
+-		    insn->imm == BPF_FUNC_get_func_ip) {
+-			/* Load IP address from ctx - 16 */
+-			insn_buf[0] = BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_1, -16);
++		//if (prog_type == BPF_PROG_TYPE_TRACING &&
++		//    insn->imm == BPF_FUNC_get_func_ip) {
++		//	/* Load IP address from ctx - 16 */
++		//	insn_buf[0] = BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_1, -16);
+ 
+-			new_prog = bpf_patch_insn_data(env, i + delta, insn_buf, 1);
+-			if (!new_prog)
+-				return -ENOMEM;
++		//	new_prog = bpf_patch_insn_data(env, i + delta, insn_buf, 1);
++		//	if (!new_prog)
++		//		return -ENOMEM;
+ 
+-			env->prog = prog = new_prog;
+-			insn      = new_prog->insnsi + i + delta;
+-			goto next_insn;
+-		}
++		//	env->prog = prog = new_prog;
++		//	insn      = new_prog->insnsi + i + delta;
++		//	goto next_insn;
++		//}
+ 
+ 		/* Implement bpf_get_branch_snapshot inline. */
+-		if (IS_ENABLED(CONFIG_PERF_EVENTS) &&
+-		    prog->jit_requested && BITS_PER_LONG == 64 &&
+-		    insn->imm == BPF_FUNC_get_branch_snapshot) {
+-			/* We are dealing with the following func protos:
+-			 * u64 bpf_get_branch_snapshot(void *buf, u32 size, u64 flags);
+-			 * int perf_snapshot_branch_stack(struct perf_branch_entry *entries, u32 cnt);
+-			 */
+-			const u32 br_entry_size = sizeof(struct perf_branch_entry);
+-
+-			/* struct perf_branch_entry is part of UAPI and is
+-			 * used as an array element, so extremely unlikely to
+-			 * ever grow or shrink
+-			 */
+-			BUILD_BUG_ON(br_entry_size != 24);
+-
+-			/* if (unlikely(flags)) return -EINVAL */
+-			insn_buf[0] = BPF_JMP_IMM(BPF_JNE, BPF_REG_3, 0, 7);
+-
+-			/* Transform size (bytes) into number of entries (cnt = size / 24).
+-			 * But to avoid expensive division instruction, we implement
+-			 * divide-by-3 through multiplication, followed by further
+-			 * division by 8 through 3-bit right shift.
+-			 * Refer to book "Hacker's Delight, 2nd ed." by Henry S. Warren, Jr.,
+-			 * p. 227, chapter "Unsigned Division by 3" for details and proofs.
+-			 *
+-			 * N / 3 <=> M * N / 2^33, where M = (2^33 + 1) / 3 = 0xaaaaaaab.
+-			 */
+-			insn_buf[1] = BPF_MOV32_IMM(BPF_REG_0, 0xaaaaaaab);
+-			insn_buf[2] = BPF_ALU64_REG(BPF_MUL, BPF_REG_2, BPF_REG_0);
+-			insn_buf[3] = BPF_ALU64_IMM(BPF_RSH, BPF_REG_2, 36);
+-
+-			/* call perf_snapshot_branch_stack implementation */
+-			insn_buf[4] = BPF_EMIT_CALL(static_call_query(perf_snapshot_branch_stack));
+-			/* if (entry_cnt == 0) return -ENOENT */
+-			insn_buf[5] = BPF_JMP_IMM(BPF_JEQ, BPF_REG_0, 0, 4);
+-			/* return entry_cnt * sizeof(struct perf_branch_entry) */
+-			insn_buf[6] = BPF_ALU32_IMM(BPF_MUL, BPF_REG_0, br_entry_size);
+-			insn_buf[7] = BPF_JMP_A(3);
+-			/* return -EINVAL; */
+-			insn_buf[8] = BPF_MOV64_IMM(BPF_REG_0, -EINVAL);
+-			insn_buf[9] = BPF_JMP_A(1);
+-			/* return -ENOENT; */
+-			insn_buf[10] = BPF_MOV64_IMM(BPF_REG_0, -ENOENT);
+-			cnt = 11;
+-
+-			new_prog = bpf_patch_insn_data(env, i + delta, insn_buf, cnt);
+-			if (!new_prog)
+-				return -ENOMEM;
+-
+-			delta    += cnt - 1;
+-			env->prog = prog = new_prog;
+-			insn      = new_prog->insnsi + i + delta;
+-			goto next_insn;
+-		}
++		//if (IS_ENABLED(CONFIG_PERF_EVENTS) &&
++		//    prog->jit_requested && BITS_PER_LONG == 64 &&
++		//    insn->imm == BPF_FUNC_get_branch_snapshot) {
++		//	/* We are dealing with the following func protos:
++		//	 * u64 bpf_get_branch_snapshot(void *buf, u32 size, u64 flags);
++		//	 * int perf_snapshot_branch_stack(struct perf_branch_entry *entries, u32 cnt);
++		//	 */
++		//	const u32 br_entry_size = sizeof(struct perf_branch_entry);
++
++		//	/* struct perf_branch_entry is part of UAPI and is
++		//	 * used as an array element, so extremely unlikely to
++		//	 * ever grow or shrink
++		//	 */
++		//	BUILD_BUG_ON(br_entry_size != 24);
++
++		//	/* if (unlikely(flags)) return -EINVAL */
++		//	insn_buf[0] = BPF_JMP_IMM(BPF_JNE, BPF_REG_3, 0, 7);
++
++		//	/* Transform size (bytes) into number of entries (cnt = size / 24).
++		//	 * But to avoid expensive division instruction, we implement
++		//	 * divide-by-3 through multiplication, followed by further
++		//	 * division by 8 through 3-bit right shift.
++		//	 * Refer to book "Hacker's Delight, 2nd ed." by Henry S. Warren, Jr.,
++		//	 * p. 227, chapter "Unsigned Division by 3" for details and proofs.
++		//	 *
++		//	 * N / 3 <=> M * N / 2^33, where M = (2^33 + 1) / 3 = 0xaaaaaaab.
++		//	 */
++		//	insn_buf[1] = BPF_MOV32_IMM(BPF_REG_0, 0xaaaaaaab);
++		//	insn_buf[2] = BPF_ALU64_REG(BPF_MUL, BPF_REG_2, BPF_REG_0);
++		//	insn_buf[3] = BPF_ALU64_IMM(BPF_RSH, BPF_REG_2, 36);
++
++		//	/* call perf_snapshot_branch_stack implementation */
++		//	insn_buf[4] = BPF_EMIT_CALL(static_call_query(perf_snapshot_branch_stack));
++		//	/* if (entry_cnt == 0) return -ENOENT */
++		//	insn_buf[5] = BPF_JMP_IMM(BPF_JEQ, BPF_REG_0, 0, 4);
++		//	/* return entry_cnt * sizeof(struct perf_branch_entry) */
++		//	insn_buf[6] = BPF_ALU32_IMM(BPF_MUL, BPF_REG_0, br_entry_size);
++		//	insn_buf[7] = BPF_JMP_A(3);
++		//	/* return -EINVAL; */
++		//	insn_buf[8] = BPF_MOV64_IMM(BPF_REG_0, -EINVAL);
++		//	insn_buf[9] = BPF_JMP_A(1);
++		//	/* return -ENOENT; */
++		//	insn_buf[10] = BPF_MOV64_IMM(BPF_REG_0, -ENOENT);
++		//	cnt = 11;
++
++		//	new_prog = bpf_patch_insn_data(env, i + delta, insn_buf, cnt);
++		//	if (!new_prog)
++		//		return -ENOMEM;
++
++		//	delta    += cnt - 1;
++		//	env->prog = prog = new_prog;
++		//	insn      = new_prog->insnsi + i + delta;
++		//	goto next_insn;
++		//}
+ 
+ 		/* Implement bpf_kptr_xchg inline */
+-		if (prog->jit_requested && BITS_PER_LONG == 64 &&
+-		    insn->imm == BPF_FUNC_kptr_xchg &&
+-		    bpf_jit_supports_ptr_xchg()) {
+-			insn_buf[0] = BPF_MOV64_REG(BPF_REG_0, BPF_REG_2);
+-			insn_buf[1] = BPF_ATOMIC_OP(BPF_DW, BPF_XCHG, BPF_REG_1, BPF_REG_0, 0);
+-			cnt = 2;
+-
+-			new_prog = bpf_patch_insn_data(env, i + delta, insn_buf, cnt);
+-			if (!new_prog)
+-				return -ENOMEM;
+-
+-			delta    += cnt - 1;
+-			env->prog = prog = new_prog;
+-			insn      = new_prog->insnsi + i + delta;
+-			goto next_insn;
+-		}
++		//if (prog->jit_requested && BITS_PER_LONG == 64 &&
++		//    insn->imm == BPF_FUNC_kptr_xchg &&
++		//    bpf_jit_supports_ptr_xchg()) {
++		//	insn_buf[0] = BPF_MOV64_REG(BPF_REG_0, BPF_REG_2);
++		//	insn_buf[1] = BPF_ATOMIC_OP(BPF_DW, BPF_XCHG, BPF_REG_1, BPF_REG_0, 0);
++		//	cnt = 2;
++
++		//	new_prog = bpf_patch_insn_data(env, i + delta, insn_buf, cnt);
++		//	if (!new_prog)
++		//		return -ENOMEM;
++
++		//	delta    += cnt - 1;
++		//	env->prog = prog = new_prog;
++		//	insn      = new_prog->insnsi + i + delta;
++		//	goto next_insn;
++		//}
+ patch_call_imm:
+ 		fn = env->ops->get_func_proto(insn->imm, env->prog);
+ 		/* all functions that have prototype and verifier allowed
