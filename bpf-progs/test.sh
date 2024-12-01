@@ -1,19 +1,25 @@
 #!/usr/bin/bash
 #
 
-FILES="time-jiffies.kern.o time-smp.kern.o time-tracing-arg-cnt.kern.o time-tracing-func-ip.kern.o time-tracing-func.kern.o time-tracing-ret.kern.o"
-TEST_RUN="time-jiffies.kern.o time-smp.kern.o" 
+FILES="time-jiffies.kern.o time-smp.kern.o time-tracing-arg-cnt.kern.o time-tracing-func-ip.kern.o time-tracing-func.kern.o time-tracing-ret.kern.o time-array-lookup.kern.o time-array-update.kern.o time-hash-lookup.kern.o time-hash-update.kern.o"
+TEST_RUN="time-jiffies.kern.o time-smp.kern.o time-array-lookup.kern.o time-array-update.kern.o time-hash-lookup.kern.o time-hash-update.kern.o"
+
 TRACING="time-tracing-arg-cnt.kern.o time-tracing-func-ip.kern.o time-tracing-func.kern.o time-tracing-ret.kern.o"
 
 #FILES="time-jiffies.kern.o time-smp.kern.o time-tracing-arg-cnt.kern.o" 
-for i in $TEST_RUN
-do
-    ./os-load.user $i prog
-done
+#
 
-for i in $TRACING
+for t in $(seq $1)
 do
-    ./load.test.user $i prog
+    for i in $TEST_RUN
+    do
+        ./os-load.user $i prog
+    done
+    
+    for i in $TRACING
+    do
+        ./load.test.user $i prog
+    done
 done
 
 #./os-load.user time-jiffies.kern.o prog

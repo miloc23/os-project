@@ -55,3 +55,5 @@ bpftool:
 
 bpftool-clean:
 	docker run --rm -v ${LINUX}:/linux -w /linux/tools/bpf/bpftool milo-os make clean -j`nproc`
+vm-copy:
+	scp -O -o "UserKnownHostsFile=/dev/null" -o "StrictHostKeyChecking=no" -P "65000" root@127.0.0.1:/linux-dev-env/bpf-progs/out .

@@ -63,7 +63,8 @@ int main(int argc, char *argv[])
     bpf_map__lookup_elem(time_map, &dur_key, 4, &duration, 8, 0);
     bpf_map__lookup_elem(time_map, &cnt_key, 4, &count, 8, 0);
 
-    printf("Path: %s Duration was %llu with count %llu\n", bpf_path, duration, count);
+    //printf("path: %s duration was %llu with count %llu\n", bpf_path, duration, count);
+    printf("%s, %llu\n", bpf_path, duration);
 
     return 0;
 }
