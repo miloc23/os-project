@@ -16,4 +16,10 @@ struct {
     __type(value, struct map_test_val);
 } test_hash_map SEC(".maps");
 
+struct {
+    __uint(type, BPF_MAP_TYPE_QUEUE);
+    __uint(max_entries, 1024);
+    __type(value, struct map_test_val);
+} test_queue_map SEC(".maps");
+
 __u32 first = 0;

@@ -2,7 +2,7 @@
 #
 
 FILES="time-jiffies.kern.o time-smp.kern.o time-tracing-arg-cnt.kern.o time-tracing-func-ip.kern.o time-tracing-func.kern.o time-tracing-ret.kern.o time-array-lookup.kern.o time-array-update.kern.o time-hash-lookup.kern.o time-hash-update.kern.o"
-TEST_RUN="time-jiffies.kern.o time-smp.kern.o time-array-lookup.kern.o time-array-update.kern.o time-hash-lookup.kern.o time-hash-update.kern.o"
+TEST_RUN="time-jiffies.kern.o time-smp.kern.o time-array-lookup.kern.o time-array-update.kern.o time-hash-lookup.kern.o time-hash-update.kern.o time-queue-peek.kern.o time-queue-pop.kern.o time-queue-push.kern.o"
 
 TRACING="time-tracing-arg-cnt.kern.o time-tracing-func-ip.kern.o time-tracing-func.kern.o time-tracing-ret.kern.o"
 
